@@ -1,0 +1,5 @@
+ var validation = await validator.ValidateAsync(request);
+
+        if (!validation.IsValid)
+
+            return Results.ValidationProblem(validation.ToDictionary());
