@@ -83,3 +83,61 @@ end Structural;
 
 5.
 Ten kod odpowiada za realizację funkcji logicznej (kombinacyjnej) w formie przypisania współbieżnego.Fizycznie opisuje on strukturę bramek logicznych (Suma Iloczynów):Bramki AND obliczającej $A \cdot B \cdot C$.Bramki AND obliczającej $C \cdot D$.Bramki OR, która sumuje wyniki tych dwóch operacji.Ponieważ jest to przypisanie poza procesem (w ciele architektury), działa ono równolegle (współbieżnie) – każda zmiana sygnałów A, B, C lub D natychmiast aktualizuje wyjście X.
+
+
+6.
+
+ram_32x8.vhd
+
+VHDL
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity ram_32x8 is
+    port (
+        clk  : in    std_logic;
+        addr : in    std_logic_vector(4 downto 0);
+        we   : in    std_logic;
+        data : inout std_logic_vector(7 downto 0)
+    );
+end entity;
+
+architecture rtl of ram_32x8 is
+    type mem_t is array(0 to 31) of std_logic_vector(7 downto 0);
+    signal ram : mem_t;
+    
+    attribute ram_init_file : string;
+    attribute ram_init_file of ram : signal is "init.mif";
+
+begin
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            if we = '1' then
+                ram(to_integer(unsigned(addr))) <= data;
+            end if;
+        end if;
+    end process;
+
+    data <= ram(to_integer(unsigned(addr))) when we = '0' else (others => 'Z');
+
+end architecture;
+
+
+init.mif
+
+Plaintext
+
+DEPTH = 32;
+WIDTH = 8;
+ADDRESS_RADIX = DEC;
+DATA_RADIX = HEX;
+
+CONTENT
+BEGIN
+    0 : FF;
+    1 : AA;
+    [2..31] : 00;
+END;
