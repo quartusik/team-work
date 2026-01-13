@@ -16,3 +16,13 @@ Inferencja HDL – Najprostsza metoda. Definiujesz tablicę w kodzie Verilog/VHD
 IP Catalog (dawniej MegaWizard) – Użycie graficznego kreatora. Pozwala precyzyjnie skonfigurować parametry (np. ROM, Dual-Port RAM) i łatwo podpiąć plik inicjalizacyjny (.mif lub .hex).
 
 Platform Designer (Qsys) – Stosowane przy budowie systemów SoC (np. z procesorem Nios II). Pozwala łatwo dodać pamięć on-chip lub kontrolery pamięci zewnętrznej (SDRAM/DDR) do magistrali systemowej.
+
+
+3.
+Syntezowalne: Zamieniają się na fizyczny sprzęt (bramki logiczne). Kompilator musi znać dokładną liczbę powtórzeń przed uruchomieniem (pętla jest "rozwijana" na równoległe bloki).
+
+Przykład: for (i=0; i<8; i=i+1) (np. do operacji na bitach).
+
+Niesyntezowalne: Działają tylko w symulacji. Służą do generowania sygnałów testowych, mogą trwać w nieskończoność lub zawierać opóźnienia czasowe.
+
+Przykład: forever #5 clk = ~clk; (generator zegara).
