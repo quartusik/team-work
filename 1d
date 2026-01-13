@@ -1,0 +1,15 @@
+W układzie kombinacyjnym poniższy kod odpowiada za : 
+… 
+architecture behaviour of interfejs is  
+ begin  
+    x <= (A and B and C) or (C and D);  
+end behaviour; 
+… 
+
+Sekwencyjne przypisanie sygnałów 
+
+Losowe przypisanie sygnałów
+
+Równoległe przypisanie sygnałów
+
+Przypisanie sygnałów znajdujących się z lewej strony sumy logicznej a następnie pozostałych 
