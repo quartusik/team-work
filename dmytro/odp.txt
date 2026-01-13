@@ -1,0 +1,73 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity Time_Generator is
+    port (
+        clk       : in std_logic; -- Zegar systemowy 50 MHz
+        reset     : in std_logic; -- Reset asynchroniczny
+        pulse_sec : out std_logic; -- Wyjście impulsu 1 sekundy
+        pulse_min : out std_logic  -- Wyjście impulsu 1 minuty
+    );
+end Time_Generator;
+
+architecture Behavioral of Time_Generator is
+
+    -- Stała dla 1 sekundy przy zegarze 50 MHz (50,000,000 cykli)
+    constant CLK_FREQ : integer := 50000000;
+
+    -- Licznik dla sekund (zakres wystarczający dla 50mln)
+    signal cnt_sec : integer range 0 to CLK_FREQ := 0;
+    
+    -- Licznik dla minut (0 do 60)
+    signal cnt_min : integer range 0 to 60 := 0;
+
+    -- Sygnał wewnętrzny (flaga) informujący o upływie sekundy
+    signal sec_tick : std_logic := '0';
+
+begin
+
+    -- PROCES 1: Generowanie impulsu co 1 sekundę
+    -- Działa bezpośrednio na szybkim zegarze 50 MHz
+    process(clk, reset)
+    begin
+        if reset = '1' then
+            cnt_sec <= 0;
+            sec_tick <= '0';
+        elsif rising_edge(clk) then
+            if cnt_sec = CLK_FREQ - 1 then -- Liczymy od 0 do 49,999,999
+                cnt_sec <= 0;
+                sec_tick <= '1'; -- Generujemy impuls (1 cykl zegara)
+            else
+                cnt_sec <= cnt_sec + 1;
+                sec_tick <= '0';
+            end if;
+        end if;
+    end process;
+
+    -- PROCES 2: Generowanie impulsu co 1 minutę
+    -- Reaguje na flagę 'sec_tick' z pierwszego procesu
+    process(clk, reset)
+    begin
+        if reset = '1' then
+            cnt_min <= 0;
+            pulse_min <= '0';
+        elsif rising_edge(clk) then
+            if sec_tick = '1' then -- Sprawdzamy, czy minęła sekunda (Enable)
+                if cnt_min = 59 then -- Jeśli to była 60-ta sekunda (0-59)
+                    cnt_min <= 0;
+                    pulse_min <= '1'; -- Generujemy impuls minuty
+                else
+                    cnt_min <= cnt_min + 1;
+                    pulse_min <= '0';
+                end if;
+            else
+                pulse_min <= '0'; -- W pozostałych cyklach wyjście jest 0
+            end if;
+        end if;
+    end process;
+
+    -- Przypisanie sygnału wewnętrznego do wyjścia
+    pulse_sec <= sec_tick;
+
+end Behavioral;
