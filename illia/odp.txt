@@ -1,0 +1,5 @@
+Kod HDL (Verilog / VHDL / SystemVerilog) – Najważniejsza i najczęściej używana metoda. Piszesz kod opisujący stany i przejścia (zazwyczaj używając instrukcji case). Daje pełną kontrolę i jest standardem w pracy inżynierskiej.
+
+Edytor Graficzny (.smf – State Machine File) – Rysujesz wizualny diagram stanów (kółka i strzałki), a Quartus automatycznie generuje z niego kod HDL. Dobre do nauki i dokumentacji.
+
+Schemat (.bdf – Block Diagram File) – Ręczne układanie bramek logicznych i przerzutników na schemacie. Metoda przestarzała (legacy) i obecnie niezalecana.
