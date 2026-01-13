@@ -46,3 +46,36 @@ loop
     clk <= not clk;
     wait for 10 ns; 
 end loop;
+
+
+
+4. 
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity andor is
+    port (
+        i1, i2, i3 : in std_logic; -- lub 'bit' zależnie od polecenia
+        output     : out std_logic
+    );
+end andor;
+
+architecture Structural of andor is
+    -- Deklaracja komponentów
+    component AND2 is
+        port (A, B : in std_logic; F1 : out std_logic);
+    end component;
+
+    component OR2 is
+        port (X, Y : in std_logic; F2 : out std_logic);
+    end component;
+
+    -- Sygnał wewnętrzny (drut łączący bramki)
+    signal wire : std_logic; 
+
+begin
+    -- Mapowanie portów
+    Gate1: AND2 port map (A => i1, B => i2, F1 => wire);
+    Gate2: OR2  port map (X => wire, Y => i3, F2 => output);
+    
+end Structural;
