@@ -2,4 +2,17 @@ Kod HDL (Verilog / VHDL / SystemVerilog) – Najważniejsza i najczęściej uży
 
 Edytor Graficzny (.smf – State Machine File) – Rysujesz wizualny diagram stanów (kółka i strzałki), a Quartus automatycznie generuje z niego kod HDL. Dobre do nauki i dokumentacji.
 
+
+
 Schemat (.bdf – Block Diagram File) – Ręczne układanie bramek logicznych i przerzutników na schemacie. Metoda przestarzała (legacy) i obecnie niezalecana.
+
+
+
+
+2.
+
+Inferencja HDL – Najprostsza metoda. Definiujesz tablicę w kodzie Verilog/VHDL (np. reg [7:0] mem [0:255]), a syntezer automatycznie rozpoznaje ją i zamienia na blokową pamięć RAM FPGA.
+
+IP Catalog (dawniej MegaWizard) – Użycie graficznego kreatora. Pozwala precyzyjnie skonfigurować parametry (np. ROM, Dual-Port RAM) i łatwo podpiąć plik inicjalizacyjny (.mif lub .hex).
+
+Platform Designer (Qsys) – Stosowane przy budowie systemów SoC (np. z procesorem Nios II). Pozwala łatwo dodać pamięć on-chip lub kontrolery pamięci zewnętrznej (SDRAM/DDR) do magistrali systemowej.
