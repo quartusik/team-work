@@ -26,3 +26,23 @@ Przykład: for (i=0; i<8; i=i+1) (np. do operacji na bitach).
 Niesyntezowalne: Działają tylko w symulacji. Służą do generowania sygnałów testowych, mogą trwać w nieskończoność lub zawierać opóźnienia czasowe.
 
 Przykład: forever #5 clk = ~clk; (generator zegara).
+
+Oto bardzo krótkie przykłady w VHDL:
+
+1. Pętla Syntezowalna (Tworzy logikę sprzętową) Musi mieć z góry określony zakres (np. 0 to 7).
+
+VHDL
+
+-- Tworzy 8 równoległych bramek AND
+for i in 0 to 7 loop
+    y(i) <= a(i) and b(i);
+end loop;
+2. Pętla Niesyntezowalna (Tylko symulacja) Używa czasu (wait for) lub nie kończy się.
+
+VHDL
+
+-- Generator zegara (nieskończona pętla z czasem)
+loop
+    clk <= not clk;
+    wait for 10 ns; 
+end loop;
