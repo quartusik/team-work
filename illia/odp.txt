@@ -79,3 +79,7 @@ begin
     Gate2: OR2  port map (X => wire, Y => i3, F2 => output);
     
 end Structural;
+
+
+5.
+Ten kod odpowiada za realizację funkcji logicznej (kombinacyjnej) w formie przypisania współbieżnego.Fizycznie opisuje on strukturę bramek logicznych (Suma Iloczynów):Bramki AND obliczającej $A \cdot B \cdot C$.Bramki AND obliczającej $C \cdot D$.Bramki OR, która sumuje wyniki tych dwóch operacji.Ponieważ jest to przypisanie poza procesem (w ciele architektury), działa ono równolegle (współbieżnie) – każda zmiana sygnałów A, B, C lub D natychmiast aktualizuje wyjście X.
