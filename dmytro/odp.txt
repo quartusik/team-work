@@ -157,3 +157,151 @@ begin
 end Structural;
 
 
+
+
+5 AI
+To zadanie polega na stworzeniu struktury hierarchicznej: najpierw tworzysz mały klocek (Sumator 1-bitowy), robisz z niego symbol, a potem używasz go 3 razy, żeby zbudować Sumator 3-bitowy.
+
+Ponieważ jestem AI tekstowym, nie mogę fizycznie "wgrać" plików `.bdf` (schematów graficznych) na Twój komputer. Mogę jednak podać Ci **dokładny kod VHDL (Styl Strukturalny)**, który jest tekstowym odpowiednikiem tego schematu, oraz instrukcję, jak to wyklikać w edytorze graficznym Quartusa, jeśli wolisz rysować.
+
+Oto kompletne rozwiązanie.
+
+### KROK 1: Element Podstawowy (Full Adder 1-bitowy)
+
+Najpierw musisz stworzyć pojedynczy sumator.
+
+**Opcja A: Kod VHDL (zapisz jako `full_adder.vhd`)**
+
+```vhdl
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity full_adder is
+    port (
+        a  : in std_logic;
+        b  : in std_logic;
+        ci : in std_logic; -- Carry In (przeniesienie wejściowe)
+        s  : out std_logic; -- Suma
+        co : out std_logic  -- Carry Out (przeniesienie wyjściowe)
+    );
+end full_adder;
+
+architecture dataflow of full_adder is
+begin
+    s  <= a xor b xor ci;
+    co <= (a and b) or (ci and (a xor b));
+end dataflow;
+
+```
+
+**Jak zrobić z tego symbol w Quartusie?**
+
+1. Skompiluj ten plik.
+2. Kliknij prawym na plik w drzewku projektu -> **Create Symbol Files for Current File**.
+3. Teraz masz gotowy "klocek" `full_adder`.
+
+---
+
+### KROK 2: Schemat Zastępczy 3-bitowy (Top Level)
+
+Teraz łączymy trzy sumatory 1-bitowe w łańcuch (Ripple Carry Adder).
+
+**Opcja A: Kod VHDL (Styl Strukturalny - odpowiednik rysowania schematu)**
+Zapisz to jako `adder_3bit.vhd`.
+
+```vhdl
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity adder_3bit is
+    port (
+        input_A : in std_logic_vector(2 downto 0); -- Wejście A (3 bity)
+        input_B : in std_logic_vector(2 downto 0); -- Wejście B (3 bity)
+        cin     : in std_logic;                    -- Przeniesienie początkowe (zazwyczaj 0)
+        sum     : out std_logic_vector(2 downto 0); -- Wynik
+        cout    : out std_logic                     -- Ostatnie przeniesienie
+    );
+end adder_3bit;
+
+architecture Structural of adder_3bit is
+    -- 1. Deklarujemy komponent (nasz symbol z Kroku 1)
+    component full_adder is
+        port (
+            a, b, ci : in std_logic;
+            s, co    : out std_logic
+        );
+    end component;
+
+    -- 2. Deklarujemy wewnętrzne przewody na przeniesienia (c1, c2)
+    signal c1, c2 : std_logic;
+
+begin
+    -- 3. Łączymy klocki (Instancjonowanie)
+    
+    -- Bit 0 (Najmłodszy)
+    FA0: full_adder port map (
+        a  => input_A(0),
+        b  => input_B(0),
+        ci => cin,        -- Tu wchodzi główne wejście cin
+        s  => sum(0),
+        co => c1          -- Wyjście idzie do kabla c1
+    );
+
+    -- Bit 1 (Środkowy)
+    FA1: full_adder port map (
+        a  => input_A(1),
+        b  => input_B(1),
+        ci => c1,         -- Bierze przeniesienie z FA0
+        s  => sum(1),
+        co => c2          -- Wyjście idzie do kabla c2
+    );
+
+    -- Bit 2 (Najstarszy)
+    FA2: full_adder port map (
+        a  => input_A(2),
+        b  => input_B(2),
+        ci => c2,         -- Bierze przeniesienie z FA1
+        s  => sum(2),
+        co => cout        -- To jest ostateczne przeniesienie
+    );
+
+end Structural;
+
+```
+
+**Opcja B: Rysowanie w Edytorze Graficznym (Block Diagram/Schematic File .bdf)**
+Jeśli zadanie wymaga pliku `.bdf`:
+
+1. Otwórz **File -> New -> Block Diagram/Schematic File**.
+2. Kliknij dwukrotnie na tło, wpisz `full_adder` (symbol stworzony w Kroku 1) i wstaw go **3 razy**.
+3. Dodaj wejścia (`input pin`) i wyjścia (`output pin`).
+4. Połącz je drutami (narzędzie **Orthogonal Node Tool**) dokładnie tak, jak w kodzie powyżej:
+* Wyjście `co` pierwszego sumatora do wejścia `ci` drugiego.
+* Wyjście `co` drugiego sumatora do wejścia `ci` trzeciego.
+
+
+
+---
+
+### KROK 3: Testowanie (Symulacja)
+
+Aby przetestować ten układ ("przetestuj schemat"), musisz stworzyć plik **Vector Waveform File (.vwf)**.
+
+1. **File -> New -> University Program VWF**.
+2. **Edit -> Insert -> Insert Node or Bus**.
+3. Dodaj `input_A`, `input_B`, `cin` oraz wyjścia `sum`, `cout`.
+4. Ustaw wartości testowe:
+* `input_A`: Ustaw jako licznik (Count Value) lub wpisz np. `001` (1).
+* `input_B`: Wpisz np. `010` (2).
+* `cin`: Ustaw na `0`.
+
+
+5. Uruchom symulację (**Run Functional Simulation**).
+
+**Oczekiwany wynik:**
+
+* Jeśli `A = 1 (001)` i `B = 2 (010)`, to wynik `sum` powinien być `3 (011)`, a `cout` powinien być `0`.
+* Jeśli `A = 7 (111)` i `B = 1 (001)`, to wynik `sum` powinien być `0 (000)`, a `cout` powinien być `1` (Przepełnienie).
+
+
+
