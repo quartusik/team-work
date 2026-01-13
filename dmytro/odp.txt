@@ -71,3 +71,89 @@ begin
     pulse_sec <= sec_tick;
 
 end Behavioral;
+
+
+
+
+
+5
+
+full_adder.vhd
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity full_adder is
+    port (
+        a  : in std_logic;
+        b  : in std_logic;
+        ci : in std_logic; -- Carry In (przeniesienie wejściowe)
+        s  : out std_logic; -- Suma
+        co : out std_logic  -- Carry Out (przeniesienie wyjściowe)
+    );
+end full_adder;
+
+architecture dataflow of full_adder is
+begin
+    s  <= a xor b xor ci;
+    co <= (a and b) or (ci and (a xor b));
+end dataflow;
+
+adder_3bit.vhd
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity adder_3bit is
+    port (
+        input_A : in std_logic_vector(2 downto 0); -- Wejście A (3 bity)
+        input_B : in std_logic_vector(2 downto 0); -- Wejście B (3 bity)
+        cin     : in std_logic;                    -- Przeniesienie początkowe (zazwyczaj 0)
+        sum     : out std_logic_vector(2 downto 0); -- Wynik
+        cout    : out std_logic                     -- Ostatnie przeniesienie
+    );
+end adder_3bit;
+
+architecture Structural of adder_3bit is
+    -- 1. Deklarujemy komponent (nasz symbol z Kroku 1)
+    component full_adder is
+        port (
+            a, b, ci : in std_logic;
+            s, co    : out std_logic
+        );
+    end component;
+
+    -- 2. Deklarujemy wewnętrzne przewody na przeniesienia (c1, c2)
+    signal c1, c2 : std_logic;
+
+begin
+    -- 3. Łączymy klocki (Instancjonowanie)
+    
+    -- Bit 0 (Najmłodszy)
+    FA0: full_adder port map (
+        a  => input_A(0),
+        b  => input_B(0),
+        ci => cin,        -- Tu wchodzi główne wejście cin
+        s  => sum(0),
+        co => c1          -- Wyjście idzie do kabla c1
+    );
+
+    -- Bit 1 (Środkowy)
+    FA1: full_adder port map (
+        a  => input_A(1),
+        b  => input_B(1),
+        ci => c1,         -- Bierze przeniesienie z FA0
+        s  => sum(1),
+        co => c2          -- Wyjście idzie do kabla c2
+    );
+
+    -- Bit 2 (Najstarszy)
+    FA2: full_adder port map (
+        a  => input_A(2),
+        b  => input_B(2),
+        ci => c2,         -- Bierze przeniesienie z FA1
+        s  => sum(2),
+        co => cout        -- To jest ostateczne przeniesienie
+    );
+
+end Structural;
+
+
